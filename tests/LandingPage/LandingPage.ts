@@ -29,13 +29,13 @@ export class LandingPage {
 
   /** Navigate and wait for the page to settle. Called once internally by create(). */
   private async navigate(): Promise<LandingPage | DashboardPage> {
-    await this.page.goto('https://dev.questra.s2o.dev/portal', { waitUntil: 'domcontentloaded', timeout: 120000 });
+    await this.page.goto('https://dev.questra.s2o.dev/portal', { waitUntil: 'commit', timeout: 120000 });
 
     // Wait for the portal to completely resolve — either showing login or dashboard nav
     const settledLocator = this.page
       .locator(`${this.loginButtonLocator}, [data-test-locator^="sidebar-item"]`)
       .first();
-    await settledLocator.waitFor({ timeout: 60_000 });
+    await settledLocator.waitFor({ timeout: 90_000 });
 
     const hasLoginBtn = await this.page.locator(this.loginButtonLocator).isVisible();
 
@@ -46,15 +46,21 @@ export class LandingPage {
   async clickLogin(): Promise<MicrosoftUsernamePage> {
     await this.page.locator(this.loginButtonLocator).click();
 
-    // Wait until the browser has left the portal and landed on the auth flow.
-    // Authentik can be slow to respond so we use a generous timeout.
-    await this.page.waitForURL(
-      (url) =>
-        url.hostname.includes('authentik') ||
-        url.hostname.includes('microsoftonline.com') ||
-        url.hostname !== 'dev.questra.s2o.dev',
-      { timeout: 60_000, waitUntil: 'domcontentloaded' }
-    );
+    // Wait for navigation to leave the portal — use networkidle-style approach.
+    // We don't use waitForURL with waitUntil:'domcontentloaded' because Authentik
+    // can be slow to render even after domcontentloaded fires.
+    // Instead, just wait until we're no longer on dev.questra.s2o.dev.
+    await this.page.waitForFunction(
+      () => !window.location.hostname.includes('questra.s2o.dev') ||
+             window.location.hostname.includes('authentik'),
+      { timeout: 60_000 }
+    ).catch(async () => {
+      // If waitForFunction times out, check current URL — we may already be there
+      const currentUrl = this.page.url();
+      if (!currentUrl.includes('authentik') && currentUrl.includes('questra.s2o.dev')) {
+        throw new Error(`Login redirect did not occur. Still on: ${currentUrl}`);
+      }
+    });
 
     return MicrosoftUsernamePage.create(this.page);
   }

@@ -53,7 +53,7 @@ function sessionIsReusable(): boolean {
   return true;
 }
 
-setup.setTimeout(120_000); // Login can be slow — give it 2 minutes
+setup.setTimeout(300_000); // Login can be slow — give it 5 minutes (Authentik can be very slow)
 
 setup('authenticate', async ({ page }) => {
   const username = process.env.QUESTRA_USERNAME;
@@ -73,6 +73,83 @@ setup('authenticate', async ({ page }) => {
   if (sessionIsReusable()) return;
 
   // ── Slow path: full login flow ────────────────────────────────────────────
+
+  // For direct auth, navigate straight to the Authentik flow instead of going
+  // through the portal landing page (avoids two slow SPA loads in sequence).
+  if (authType !== 'windows') {
+    console.log('⚡ Direct mode: navigating straight to Authentik flow...');
+    await page.goto(
+      'https://authentik.dev.questra.s2o.dev/if/flow/default-authentication-flow/?client_id=Questra&redirect_uri=https%3A%2F%2Fdev.questra.s2o.dev%2Fportal%2Fsignin-oidc&response_type=code&scope=profile+offline_access',
+      { waitUntil: 'commit', timeout: 120_000 }
+    );
+    // Wait for the Authentik form to render (JS-driven SPA)
+    await page.locator('#ak-identifier-input').waitFor({ timeout: 120_000 });
+    await page.locator('#ak-identifier-input').fill(username);
+    await page.locator('#ak-stage-identification-password').fill(password);
+    await page.getByRole('button', { name: /log in/i }).click();
+
+    // After login, Authentik may redirect directly to the portal OR land on the
+    // Authentik user library (/if/user/#/library). If we land on the library,
+    // click the Questra application card to trigger the OIDC redirect.
+    try {
+      await page.waitForURL(
+        (url) => url.hostname === 'dev.questra.s2o.dev' && url.pathname.startsWith('/portal'),
+        { timeout: 30_000 }
+      );
+    } catch {
+      // Check if we landed on the Authentik user library
+      if (page.url().includes('authentik') && page.url().includes('/if/user')) {
+        console.log('🔀 Landed on Authentik library — clicking Questra app to trigger redirect...');
+        await page.waitForTimeout(3000); // Let the library page settle
+        // The Questra card is rendered as a custom element (ak-application-card).
+        // Use JavaScript click on the card container or its inner anchor/button.
+        const clicked = await page.evaluate(() => {
+          // Try: custom element shadow DOM link
+          const cards = document.querySelectorAll('ak-application-card');
+          for (const card of cards) {
+            if (card.textContent?.includes('Questra')) {
+              (card as HTMLElement).click();
+              return 'ak-application-card';
+            }
+          }
+          // Try: any anchor whose href points to the Questra app
+          const links = document.querySelectorAll('a[href]');
+          for (const link of links) {
+            const href = (link as HTMLAnchorElement).href;
+            if (href.includes('Questra') || href.includes('questra') || link.textContent?.includes('Questra')) {
+              (link as HTMLElement).click();
+              return `link: ${href}`;
+            }
+          }
+          // Try: any button or div containing Questra text
+          const all = document.querySelectorAll('[class*="card"], [class*="app"], article, li');
+          for (const el of all) {
+            if (el.textContent?.trim() === 'Questra' || el.textContent?.includes('Questra')) {
+              (el as HTMLElement).click();
+              return `generic: ${el.tagName}`;
+            }
+          }
+          return 'nothing found';
+        });
+        console.log(`🔨 Clicked: ${clicked}`);
+        // Wait for redirect to portal
+        await page.waitForURL(
+          (url) => url.hostname === 'dev.questra.s2o.dev' && url.pathname.startsWith('/portal'),
+          { timeout: 90_000 }
+        );
+      } else {
+        throw new Error(`Unexpected URL after login: ${page.url()}`);
+      }
+    }
+    await page.waitForTimeout(5000);
+    const sessionData = await page.evaluate(() => JSON.stringify(Object.entries(sessionStorage)));
+    console.log(`SESSION STORAGE KEYS:`, await page.evaluate(() => Object.keys(sessionStorage)));
+    fs.writeFileSync('.auth/sessionStorage.json', sessionData, 'utf-8');
+    await page.context().storageState({ path: authFile });
+    console.log(`✅ Auth state saved to ${authFile} (auth type: direct/fast-path)`);
+    return;
+  }
+
   const pageResult = await LandingPage.create(page);
 
   // If already authenticated (e.g. OS-level SSO auto-logged us in), save and exit
@@ -118,13 +195,14 @@ setup('authenticate', async ({ page }) => {
     );
   } else {
     // Direct Authentik login — fill the username+password form that is on screen
-    await page.locator('#ak-identifier-input').waitFor({ timeout: 10_000 });
+    // Authentik can be very slow to render; give it generous time
+    await page.locator('#ak-identifier-input').waitFor({ timeout: 120_000 });
     await page.locator('#ak-identifier-input').fill(username);
     await page.locator('#ak-stage-identification-password').fill(password);
     await page.getByRole('button', { name: /log in/i }).click();
     await page.waitForURL(
       (url) => url.hostname === 'dev.questra.s2o.dev' && url.pathname.startsWith('/portal'),
-      { timeout: 60_000 }
+      { timeout: 120_000 }
     );
   }
 
