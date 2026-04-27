@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+
+    <style>
+      .loading {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      .loading circle {
+        stroke: #ee8509;
+        stroke-dasharray: 80px, 200px;
+        stroke-dashoffset: 0;
+        animation: circular-progress-circle-animation 1.4s ease-in-out infinite;
+      }
+
+      .loading .circular-progress {
+        display: inline-block;
+        animation: circular-progress-root-animation 1.4s linear infinite;
+      }
+
+      @keyframes circular-progress-circle-animation {
+        0% {
+          stroke-dasharray: 1px, 200px;
+          stroke-dashoffset: 0;
+        }
+
+        50% {
+          stroke-dasharray: 100px, 200px;
+          stroke-dashoffset: -15px;
+        }
+
+        100% {
+          stroke-dasharray: 100px, 200px;
+          stroke-dashoffset: -125px;
+        }
+      }
+      @keyframes circular-progress-root-animation {
+        0% {
+          -webkit-transform: rotate(0deg);
+          -moz-transform: rotate(0deg);
+          -ms-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+
+        100% {
+          -webkit-transform: rotate(360deg);
+          -moz-transform: rotate(360deg);
+          -ms-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <link rel="icon" type="image/svg+xml" href="https://dev.questra.s2o.dev/portal/questra_favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <title>Questra Portal</title>
+    <script>
+      window.global = globalThis;
+      if (typeof process === 'undefined') {
+        window.process = {
+          env: {},
+        };
+      }
+    </script>
+    <script src="https://dev.questra.s2o.dev/portal/config.js"></script>
+    <script src="https://dev.questra.s2o.dev/portal/info.js"></script>
+    <!--
+          Notice the use of %PUBLIC_URL% in the tags above.
+          It will be replaced with the URL of the `public` folder during the build.
+          Only files inside the `public` folder can be referenced from the HTML.
+
+          Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+          work correctly both with client-side routing and a non-root public URL.
+          Learn how to configure a non-root public URL by running `npm run build`.
+        -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+
+    <!-- Google fonts (https://fonts.google.com/) -->
+    <!-- Families: Lexend, Roboto Flex, nunito, Rubik -->
+    <!-- currently used: Roboto Flex -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700;800;900&amp;family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900;1,1000&amp;family=Roboto+Flex:wght@100;200;300;400;500;600;700;800;900;1000&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <script type="module" crossorigin="" src="https://dev.questra.s2o.dev/portal/index.js"></script>
+    <link rel="stylesheet" crossorigin="" href="https://dev.questra.s2o.dev/portal/assets/CdjoL2Cj.css">
+    <link rel="stylesheet" crossorigin="" href="https://dev.questra.s2o.dev/portal/assets/CcnuWXUr.css">
+    <link rel="stylesheet" crossorigin="" href="https://dev.questra.s2o.dev/portal/assets/CMKNK2uU.css">
+    <link rel="stylesheet" crossorigin="" href="https://dev.questra.s2o.dev/portal/assets/BpEcLIF6.css">
+    <link rel="stylesheet" crossorigin="" href="https://dev.questra.s2o.dev/portal/assets/DGLJ6e53.css">
+  <style data-emotion="css-global" data-s=""></style></head>
+  <body>
+    <div class="loading">
+      <span class="circular-progress" style="width: 40px; height: 40px" role="progressbar"><svg viewBox="22 22 44 44">
+          <circle class="circular-progress-circle" cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"></circle></svg></span>
+    </div>
+    <div id="root"><h1>redirecting</h1></div>
+  
+
+</body></html>

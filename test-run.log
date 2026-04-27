@@ -1,0 +1,161 @@
+
+> questra-e2e@1.0.0 test
+> playwright test
+
+
+Running 33 tests using 2 workers
+
+⏰ Session is 7758m old (limit: 60m) — will re-login.
+  ✘   1 [setup] › tests/Login/auth.setup.ts:58:6 › authenticate (1.1m)
+
+
+  1) [setup] › tests/Login/auth.setup.ts:58:6 › authenticate ───────────────────────────────────────
+
+    TimeoutError: page.waitForURL: Timeout 60000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "domcontentloaded"
+    ============================================================
+
+       at LandingPage/LandingPage.ts:51
+
+      49 |     // Wait until the browser has left the portal and landed on the auth flow.
+      50 |     // Authentik can be slow to respond so we use a generous timeout.
+    > 51 |     await this.page.waitForURL(
+         |                     ^
+      52 |       (url) =>
+      53 |         url.hostname.includes('authentik') ||
+      54 |         url.hostname.includes('microsoftonline.com') ||
+        at LandingPage.clickLogin (/Users/simon/repos/AITesting/tests/LandingPage/LandingPage.ts:51:21)
+        at /Users/simon/repos/AITesting/tests/Login/auth.setup.ts:89:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/Login-auth.setup.ts-authenticate-setup/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/Login-auth.setup.ts-authenticate-setup/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/Login-auth.setup.ts-authenticate-setup/error-context.md
+
+  1 failed
+    [setup] › tests/Login/auth.setup.ts:58:6 › authenticate ────────────────────────────────────────
+  32 did not run
+
+> questra-e2e@1.0.0 test
+> playwright test
+
+
+Running 41 tests using 2 workers
+
+⏰ Session is 334m old (limit: 60m) — will re-login.
+SESSION STORAGE KEYS: []
+✅ Auth state saved to .auth/session.json (auth type: windows)
+  ✓   1 [setup] › tests/Login/auth.setup.ts:58:6 › authenticate (26.0s)
+  ✓   2 [smoke] › tests/LandingPage/landingPage.spec.ts:29:7 › Public landing page › has an "Anmelden" login button (5.0s)
+  ✓   3 [smoke] › tests/LandingPage/landingPage.spec.ts:24:7 › Public landing page › shows the welcome heading (5.0s)
+❌ HTTP Error: 404 https://dev.questra.s2o.dev/OVERIDE_ASSET_BASE/assets/CWi-zmRD.woff2
+  ✓   5 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:98:7 › Inventory CRUD — All Property Types › 01 — inventory does not already exist (clean slate) (76ms)
+Response:  
+❌ HTTP Error: 404 https://dev.questra.s2o.dev/OVERIDE_ASSET_BASE/assets/d6KXgdvN.woff2
+Response:  
+  ✓   4 [smoke] › tests/LandingPage/landingPage.spec.ts:35:7 › Public landing page › clicking "Anmelden" redirects to Microsoft login sequence (8.1s)
+  ✓   7 [authenticated] › tests/NavigationBar/navigationBar.spec.ts:29:7 › Navigation Bar & User Menu › sidebar is visible @smoke (4.8s)
+  ✓   6 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:109:7 › Inventory CRUD — All Property Types › 02 — creates inventory with core property types (11.0s)
+  ✓   9 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:118:7 › Inventory CRUD — All Property Types › 03 — inventory detail page loads without error (454ms)
+  ✓   8 [authenticated] › tests/NavigationBar/navigationBar.spec.ts:34:7 › Navigation Bar & User Menu › displays current version badge @smoke (4.7s)
+  ✓  11 [authenticated] › tests/NavigationBar/navigationBar.spec.ts:39:7 › Navigation Bar & User Menu › shows user avatar / initials in the sidebar @smoke (4.4s)
+  ✓  10 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:129:9 › Inventory CRUD — All Property Types › 04 — adds Entry A — baseline values (10.0s)
+  ✓  12 [authenticated] › tests/NavigationBar/navigationBar.spec.ts:44:7 › Navigation Bar & User Menu › user menu opens on avatar click and shows Abmelden option @smoke (4.8s)
+  ✓  14 [authenticated] › tests/NavigationBar/navigationBar.spec.ts:49:7 › Navigation Bar & User Menu › navigating via Eigene Seiten (Pages) loads without error @smoke (5.6s)
+  ✓  13 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:129:9 › Inventory CRUD — All Property Types › 05 — adds Entry B — edge-case string (11.0s)
+  ✓  15 [authenticated] › tests/portal.spec.ts:48:7 › Dashboard › shows personalised welcome heading @smoke (4.4s)
+  ✓  17 [authenticated] › tests/portal.spec.ts:52:7 › Dashboard › shows all three feature cards (Inventories, Access, Automation) @smoke (4.4s)
+  ✓  16 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:129:9 › Inventory CRUD — All Property Types › 06 — adds Entry C — large numbers (9.5s)
+  ✓  18 [authenticated] › tests/portal.spec.ts:58:7 › Dashboard › has a "Dokumentation" button @smoke (4.6s)
+🧹 Cleanup: deleted inventory "E2E_AllProps_1776960037987"
+  ✘  19 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:145:7 › Inventory CRUD — All Property Types › 07 — inventory shows all added entries (334ms)
+  -  21 [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:160:7 › Inventory CRUD — All Property Types › 08 — can delete the inventory (teardown pre-check)
+  ✓  20 [authenticated] › tests/portal.spec.ts:62:7 › Dashboard › has an "Erstes Widget hinzufügen" button @smoke (4.6s)
+  ✓  22 [authenticated] › tests/portal.spec.ts:66:7 › Dashboard › displays current version badge @smoke (5.5s)
+  ✓  23 [authenticated] › tests/portal.spec.ts:72:7 › Dashboard › does not show the public "Anmelden" button @smoke (5.1s)
+  ✓  24 [authenticated] › tests/portal.spec.ts:86:7 › Access Manager — Users › navigates to users page (4.7s)
+  ✓  26 [authenticated] › tests/portal.spec.ts:96:7 › Access Manager — Users › has a search/filter input (5.1s)
+  ✓  25 [authenticated] › tests/portal.spec.ts:90:7 › Access Manager — Users › shows a users table or list (10.3s)
+  ✓  28 [authenticated] › tests/portal.spec.ts:114:9 › Access Manager — Sub-pages › Benutzergruppen page loads (5.0s)
+  ✓  29 [authenticated] › tests/portal.spec.ts:114:9 › Access Manager — Sub-pages › Berechtigungen page loads (4.9s)
+  ✓  30 [authenticated] › tests/portal.spec.ts:114:9 › Access Manager — Sub-pages › API-Keys page loads (4.7s)
+  ✓  31 [authenticated] › tests/portal.spec.ts:130:7 › Data Manager — Inventories › navigates to inventories page (4.5s)
+  ✓  32 [authenticated] › tests/portal.spec.ts:134:7 › Data Manager — Inventories › shows at least one inventory in the list (5.8s)
+  ✓  33 [authenticated] › tests/portal.spec.ts:140:7 › Data Manager — Inventories › has an "Inventory hinzufügen" button (4.6s)
+  ✓  34 [authenticated] › tests/portal.spec.ts:144:7 › Data Manager — Inventories › has a search bar (4.6s)
+  ✘  27 [authenticated] › tests/portal.spec.ts:101:7 › Access Manager — Users › has a "Benutzer hinzufügen" add-user button (35.0s)
+  ✓  35 [authenticated] › tests/portal.spec.ts:158:7 › Automation Manager — Automations › navigates to automations page (4.5s)
+  ✓  36 [authenticated] › tests/portal.spec.ts:162:7 › Automation Manager — Automations › page loads without error (4.6s)
+  ✓  37 [authenticated] › tests/portal.spec.ts:166:7 › Automation Manager — Automations › shows automation workspaces or scripts (4.4s)
+  ✓  38 [authenticated] › tests/portal.spec.ts:181:9 › Automation Manager — Sub-pages › History page loads (4.6s)
+  ✓  39 [authenticated] › tests/portal.spec.ts:181:9 › Automation Manager — Sub-pages › Tasks page loads (5.0s)
+  ✓  40 [authenticated] › tests/portal.spec.ts:181:9 › Automation Manager — Sub-pages › Schedules page loads (5.8s)
+  ✓  41 [authenticated] › tests/portal.spec.ts:181:9 › Automation Manager — Sub-pages › Connections page loads (4.6s)
+
+
+  1) [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:145:7 › Inventory CRUD — All Property Types › 07 — inventory shows all added entries 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m2[39m
+    Received:   [31m2[39m
+
+      153 |
+      154 |     const count = await rows.count();
+    > 155 |     expect(count).toBeGreaterThan(ENTRIES.length - 1);
+          |                   ^
+      156 |   });
+      157 |
+      158 |   // ── Test 8: Cleanup verification (teardown guard) ───────────────────────
+        at /Users/simon/repos/AITesting/tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:155:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/InventoryCreateDialog-inve-e1b1b-ory-shows-all-added-entries-Inventory/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/InventoryCreateDialog-inve-e1b1b-ory-shows-all-added-entries-Inventory/error-context.md
+
+  2) [authenticated] › tests/portal.spec.ts:101:7 › Access Manager — Users › has a "Benutzer hinzufügen" add-user button 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('button', { name: /benutzer hinzufügen/i })
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 30000ms[22m
+    [2m  - waiting for getByRole('button', { name: /benutzer hinzufügen/i })[22m
+
+
+      100 |
+      101 |   test('has a "Benutzer hinzufügen" add-user button', async ({ page }) => {
+    > 102 |     await expect(page.getByRole('button', { name: /benutzer hinzufügen/i })).toBeVisible()
+          |                                                                              ^
+      103 |   })
+      104 | })
+      105 |
+        at /Users/simon/repos/AITesting/tests/portal.spec.ts:102:78
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portal-Access-Manager-—-Us-1f066--hinzufügen-add-user-button-authenticated/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/portal-Access-Manager-—-Us-1f066--hinzufügen-add-user-button-authenticated/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portal-Access-Manager-—-Us-1f066--hinzufügen-add-user-button-authenticated/error-context.md
+
+  2 failed
+    [Inventory] › tests/InventoryCreateDialog/inventoryCreateDialog.spec.ts:145:7 › Inventory CRUD — All Property Types › 07 — inventory shows all added entries 
+    [authenticated] › tests/portal.spec.ts:101:7 › Access Manager — Users › has a "Benutzer hinzufügen" add-user button 
+  1 did not run
+  38 passed (2.6m)

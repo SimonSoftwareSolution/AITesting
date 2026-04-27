@@ -1,0 +1,20 @@
+{
+  "name": "questra-e2e",
+  "version": "1.0.0",
+  "description": "Playwright E2E tests for the Questra Portal",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:inventory": "playwright test --project=Inventory",
+    "codegen": "playwright codegen https://dev.questra.s2o.dev/portal",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^25.6.0",
+    "dotenv": "^16.4.7"
+  }
+}
