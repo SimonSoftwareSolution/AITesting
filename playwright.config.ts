@@ -15,7 +15,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 2,
+  workers: process.env.CI ? 1 : 7,
 
   reporter: [['html'], ['list']],
 
@@ -49,11 +49,9 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
-    // --- Inventory CRUD tests — ordered, single worker, NO retries ---
-    // test.describe.serial() inside each spec enforces sequential execution.
-    // retries: 0 is critical — retrying a Create test would create duplicates.
+    // --- Inventory Create Dialog tests ---
     {
-      name: 'Inventory',
+      name: 'InventoryCreateDialogTests',
       testMatch: /InventoryCreateDialog\/.*\.spec\.ts/,
       fullyParallel: false,
       retries: 0,
@@ -61,19 +59,35 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: authFile,
-        // Give Inventory tests more headroom — CRUD flows are slower
         actionTimeout: 60_000,
       },
       dependencies: ['setup'],
     },
 
-    // --- Authenticated tests — always wait for setup to complete first ---
+    // --- Inventory Page tests ---
+    // Depends on the create dialog tests finishing so the inventory exists.
+    {
+      name: 'InventoryPageTests',
+      testMatch: /Inventory\/.*\.spec\.ts/,
+      fullyParallel: false,
+      retries: 0,
+      workers: 1,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+        actionTimeout: 60_000,
+      },
+      dependencies: ['setup', 'InventoryCreateDialogTests'],
+    },
+
+    // --- Authenticated tests ---
     {
       name: 'authenticated',
       testIgnore: [
         /LandingPage\/landingPage\.spec\.ts/,
         /Login\/auth\.setup\.ts/,
-        /InventoryCreateDialog\/.*\.spec\.ts/,  // Inventory project owns these
+        /InventoryCreateDialog\/.*\.spec\.ts/,
+        /Inventory\/.*\.spec\.ts/,
       ],
       use: {
         ...devices['Desktop Chrome'],

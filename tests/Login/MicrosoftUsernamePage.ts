@@ -8,19 +8,10 @@ export class MicrosoftUsernamePage {
     this.page = page;
   }
 
-  /**
-   * Factory method — returns a MicrosoftUsernamePage representing wherever the
-   * redirect chain has landed after clicking Login. Does NOT wait for Microsoft
-   * specific elements here, because in 'direct' auth mode (Authentik form) we
-   * never reach microsoftonline.com. The actual Microsoft wait is in enterUsername().
-   */
   static async create(page: Page): Promise<MicrosoftUsernamePage> {
     return new MicrosoftUsernamePage(page);
   }
 
-  // ==========================================
-  // ACTION METHODS
-  // ==========================================
   async isOnPage(): Promise<boolean> {
     return this.page.url().includes('microsoftonline.com');
   }
@@ -31,9 +22,6 @@ export class MicrosoftUsernamePage {
     return MicrosoftPasswordPage.create(this.page);
   }
 
-  // ==========================================
-  // LOCATOR STRINGS
-  // ==========================================
   readonly emailInputLocator = 'input[type="email"], input[name="loginfmt"]';
   readonly nextButtonLocator = 'button:has-text("Next"), input[type="submit"][value="Next"]';
 }

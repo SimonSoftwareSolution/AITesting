@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { LandingPage } from './LandingPage';
 
-/**
- * Smoke tests — these run WITHOUT authentication
- * to verify the public landing page behaves correctly.
- */
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Public landing page', () => {
@@ -33,10 +29,7 @@ test.describe('Public landing page', () => {
   });
 
   test('clicking "Anmelden" redirects to Microsoft login sequence', async ({ page }) => {
-    // Calling clickLogin handles the Authentik redirection gracefully
     await landingPage.clickLogin();
-
-    // Note: Due to auto-login cookies, it might immediately resolve to dev.questra.s2o.dev instead of Microsoft
     const currentUrl = page.url();
     expect(currentUrl.includes('microsoftonline.com') || currentUrl.includes('dev.questra.s2o.dev')).toBeTruthy();
   });

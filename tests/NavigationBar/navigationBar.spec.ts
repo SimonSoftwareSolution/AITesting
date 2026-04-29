@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import { NavigationBar } from './NavigationBar';
 
 async function ensureAuthenticated(page: any, url: string) {
-  // Give the page up to 120s to perform the initial network load
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 })
   const sidebar = page.locator('[data-test-locator^="sidebar-item"]').first()
   const anmelden = page.getByRole('button', { name: /^Anmelden$/i }).first()
@@ -11,7 +10,7 @@ async function ensureAuthenticated(page: any, url: string) {
       sidebar.waitFor({ state: 'visible', timeout: 60000 }),
       anmelden.waitFor({ state: 'visible', timeout: 60000 })
     ])
-  } catch {}
+  } catch { }
   if (await anmelden.isVisible()) {
     await anmelden.click()
     await sidebar.waitFor({ state: 'visible', timeout: 60000 })
@@ -32,7 +31,6 @@ test.describe('Navigation Bar & User Menu', { tag: '@smoke' }, () => {
   });
 
   test('displays current version badge', async ({ page }) => {
-    // e.g. "2.5.0-dev.build-..." badge
     await expect(page.locator(navBar.versionBadgeLocator)).toBeVisible();
   });
 

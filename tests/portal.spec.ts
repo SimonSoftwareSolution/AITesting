@@ -1,34 +1,19 @@
 import { test, expect } from '@playwright/test'
-
-/**
- * Authenticated portal tests for dev.questra.s2o.dev/portal
- * These tests rely on the session saved by auth.setup.ts.
- * The storageState is injected automatically via playwright.config.ts.
- *
- * Portal structure discovered:
- *  - Dashboard    → /portal
- *  - Eigene Seiten (Pages) → /portal/page
- *  - Access Manager       → /portal/access-manager/users
- *  - Data Manager         → /portal/data-manager/inventories
- *  - Automation Manager   → /portal/automation-manager/automations
- */
+import { Page } from '@playwright/test'
 
 const BASE = 'https://dev.questra.s2o.dev/portal'
 
-import { Page } from '@playwright/test'
-
 async function ensureAuthenticated(page: Page, url: string) {
-  // Give the page up to 120s to perform the initial network load
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 })
   const sidebar = page.locator('[data-test-locator^="sidebar-item"]').first()
   const anmelden = page.getByRole('button', { name: /^Anmelden$/i }).first()
-  
+
   try {
     await Promise.race([
       sidebar.waitFor({ state: 'visible', timeout: 60000 }),
       anmelden.waitFor({ state: 'visible', timeout: 60000 })
     ])
-  } catch {}
+  } catch { }
 
   if (await anmelden.isVisible()) {
     await anmelden.click()
@@ -36,10 +21,6 @@ async function ensureAuthenticated(page: Page, url: string) {
   }
 }
 
-
-// ---------------------------------------------------------------------------
-// Dashboard
-// ---------------------------------------------------------------------------
 test.describe('Dashboard', { tag: '@smoke' }, () => {
   test.beforeEach(async ({ page }) => {
     await ensureAuthenticated(page, BASE)
@@ -64,20 +45,14 @@ test.describe('Dashboard', { tag: '@smoke' }, () => {
   })
 
   test('displays current version badge', async ({ page }) => {
-    // e.g. "2.5.0-dev.build-..." badge in the top banner
     await expect(page.getByText(/\d+\.\d+\.\d+/)).toBeVisible()
   })
-
 
   test('does not show the public "Anmelden" button', async ({ page }) => {
     await expect(page.getByRole('button', { name: /^anmelden$/i })).not.toBeVisible()
   })
 })
 
-
-// ---------------------------------------------------------------------------
-// Access Manager
-// ---------------------------------------------------------------------------
 test.describe('Access Manager — Users', () => {
   test.beforeEach(async ({ page }) => {
     await ensureAuthenticated(page, `${BASE}/access-manager/users`)
@@ -88,7 +63,6 @@ test.describe('Access Manager — Users', () => {
   })
 
   test('shows a users table or list', async ({ page }) => {
-    // MUI data grid or similar table
     const table = page.locator('table, [role="grid"], [class*="DataGrid"], [class*="Table"]').first()
     await expect(table).toBeVisible({ timeout: 10_000 })
   })
@@ -119,9 +93,6 @@ test.describe('Access Manager — Sub-pages', () => {
   }
 })
 
-// ---------------------------------------------------------------------------
-// Data Manager
-// ---------------------------------------------------------------------------
 test.describe('Data Manager — Inventories', () => {
   test.beforeEach(async ({ page }) => {
     await ensureAuthenticated(page, `${BASE}/data-manager/inventories`)
@@ -132,7 +103,6 @@ test.describe('Data Manager — Inventories', () => {
   })
 
   test('shows at least one inventory in the list', async ({ page }) => {
-    // Inventory list should have at least one item (e.g. Books, Categories, Filesystem)
     const items = page.locator('[class*="inventory"], [class*="card"], tbody tr, [role="row"]')
     await expect(items.first()).toBeVisible({ timeout: 10_000 })
   })
@@ -147,9 +117,6 @@ test.describe('Data Manager — Inventories', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// Automation Manager
-// ---------------------------------------------------------------------------
 test.describe('Automation Manager — Automations', () => {
   test.beforeEach(async ({ page }) => {
     await ensureAuthenticated(page, `${BASE}/automation-manager/automations`)
@@ -185,4 +152,3 @@ test.describe('Automation Manager — Sub-pages', () => {
     })
   }
 })
-

@@ -10,19 +10,11 @@ export class DashboardPage {
     this.navbar = navbar;
   }
 
-  /**
-   * Factory method — waits for the sidebar (NavigationBar) to confirm we are
-   * on an authenticated dashboard page before returning.
-   * The page must already be at an authenticated URL before calling this.
-   */
   static async create(page: Page): Promise<DashboardPage> {
     const navbar = await NavigationBar.create(page);
     return new DashboardPage(page, navbar);
   }
 
-  // ==========================================
-  // ACTION METHODS
-  // ==========================================
   async getWelcomeMessageText() {
     return await this.page.locator(this.welcomeBackHeadingLocator).textContent();
   }
@@ -31,9 +23,6 @@ export class DashboardPage {
     await this.page.locator(this.addFirstWidgetButtonLocator).click();
   }
 
-  // ==========================================
-  // LOCATOR STRINGS
-  // ==========================================
   readonly welcomeBackHeadingLocator = 'text=/willkommen zurück/i';
   readonly addFirstWidgetButtonLocator = 'button:has-text("Erstes Widget hinzufügen"), button:has-text("Add first widget")';
   readonly documentationLinkLocator = 'a:has-text("Dokumentation")';
