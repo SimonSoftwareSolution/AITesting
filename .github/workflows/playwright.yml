@@ -1,0 +1,120 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Playwright Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        id: run_tests
+        env:
+          QUESTRA_AUTH_TYPE: ${{ secrets.QUESTRA_AUTH_TYPE }}
+          QUESTRA_USERNAME: ${{ secrets.QUESTRA_USERNAME }}
+          QUESTRA_PASSWORD: ${{ secrets.QUESTRA_PASSWORD }}
+          CI: true
+        run: npx playwright test --workers=1
+        continue-on-error: true
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload test results (failures)
+        if: steps.run_tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+      - name: Parse failed tests
+        if: steps.run_tests.outcome == 'failure'
+        id: parse_failures
+        run: |
+          # Extract failed test names from the JSON report
+          FAILED=$(node -e "
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('playwright-report/data/report.json', 'utf8'));
+            const failed = [];
+            for (const suite of report.suites || []) {
+              for (const spec of suite.specs || []) {
+                for (const test of spec.tests || []) {
+                  if (test.status === 'failed' || test.status === 'unexpected') {
+                    failed.push('- \`' + spec.title + '\` (' + test.projectName + ')');
+                  }
+                }
+              }
+            }
+            console.log(failed.join('\n') || '- Unknown failures (see report artifact)');
+          " 2>/dev/null || echo "- See attached report for failure details")
+          # Store as multiline output
+          echo "failed_tests<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Issue on failure
+        if: steps.run_tests.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failedTests = `${{ steps.parse_failures.outputs.failed_tests }}`;
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const commitUrl = `https://github.com/${{ github.repository }}/commit/${{ github.sha }}`;
+            const shortSha = '${{ github.sha }}'.substring(0, 7);
+            const pusher = '${{ github.actor }}';
+
+            const body = [
+              `## 🔴 Playwright Tests Failed`,
+              ``,
+              `A push to \`main\` by **${pusher}** triggered a test run that failed.`,
+              ``,
+              `**Commit:** [${shortSha}](${commitUrl}) — ${{ github.event.head_commit.message }}`,
+              `**Run:** [View full report & artifacts](${runUrl})`,
+              ``,
+              `### Failed Tests`,
+              failedTests,
+              ``,
+              `### Next Steps`,
+              `- Check whether the UI changed (functionality intact → fix the test, open a PR)`,
+              `- Or investigate if this is a real bug`,
+              ``,
+              `> This issue was created automatically by the CI workflow.`,
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔴 Test failure on main (${shortSha}): ${failedTests.split('\n').length} test(s) failed`,
+              body,
+              labels: ['test-failure', 'automated'],
+            });
+
+      - name: Fail the job if tests failed
+        if: steps.run_tests.outcome == 'failure'
+        run: exit 1
