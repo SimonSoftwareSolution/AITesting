@@ -98,8 +98,8 @@ test.describe('Access Manager — Users', () => {
     await expect(search).toBeVisible()
   })
 
-  test('has a "Benutzer hinzufügen" add-user button', async ({ page }) => {
-    await expect(page.getByRole('button', { name: /benutzer hinzufügen/i })).toBeVisible()
+  test('has a "Benutzer hinzufügen" add-user link', async ({ page }) => {
+    await expect(page.getByRole('link', { name: /benutzer hinzufügen/i })).toBeVisible()
   })
 })
 
